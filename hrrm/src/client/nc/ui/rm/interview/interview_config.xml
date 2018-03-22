@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- 环境变量 -->
+	<bean id="context" class="nc.vo.uif2.LoginContext" />
+
+	<bean id="waitNodeKey" class="java.lang.String">
+		<constructor-arg value="waitinterview" />
+	</bean>
+	<bean id="psndocNodeKey" class="java.lang.String">
+		<constructor-arg value="rmpsndoc" />
+	</bean>
+	<bean id="ivplanNodeKey" class="java.lang.String">
+		<constructor-arg value="ivresult" />
+	</bean>
+	<bean id="ivingNodeKey" class="java.lang.String">
+		<constructor-arg value="rmiving" />
+	</bean>
+
+	<bean id="iverNodeKey" class="java.lang.String">
+		<constructor-arg value="rminterviewer" />
+	</bean>
+	<bean id="hiredialognodekey" class="java.lang.String">
+		<constructor-arg value="hiredialog" />
+	</bean>
+	<bean id="rminterview" class="java.lang.String">
+		<constructor-arg value="rminterview" />
+	</bean>
+	<!-- 对象转换器工厂，由此获取操作对象的特征信息 -->
+	<bean id="boadatorfactory" class="nc.vo.bd.meta.BDObjectAdpaterFactory" />
+	<bean id="manageModelService" class="nc.ui.rm.interview.model.InterviewAppModelService" />
+
+	<bean id="ModelList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="WaitInterviewAppModel" />
+				<ref bean="InterviewAppModel" />
+				<ref bean="FailInterviewAppModel" />
+				<ref bean="PassInterviewAppModel" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="WaitInterviewAppModel" class="nc.ui.rm.interview.model.WaitInterviewAppModel">
+		<property name="service" ref="manageModelService" />
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="InterviewAppModel" class="nc.ui.rm.interview.model.InterviewAppModel">
+		<property name="service" ref="manageModelService" />
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="PassInterviewAppModel" class="nc.ui.rm.interview.model.PassInterviewAppModel">
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+		<property name="service" ref="manageModelService" />
+	</bean>
+	<bean id="FailInterviewAppModel" class="nc.ui.rm.interview.model.FailInterviewAppModel">
+		<property name="service" ref="manageModelService" />
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+
+	<!-- 数据模型管理器，主要负责各种方式的模型初始化 -->
+	<bean id="modelDataManager" class="nc.ui.rm.interview.model.InterviewAppModelDataManager">
+		<property name="models" ref="ModelList" />
+		<property name="context" ref="context" />
+		<property name="service" ref="manageModelService" />
+	</bean>
+
+	<!-- 待面试人员浏览 -->
+	<bean id="WaitInterviewListView" class="nc.ui.rm.interview.view.WaitInterviewListView"
+		init-method="initUI">
+		<property name="model" ref="WaitInterviewAppModel" />
+	    <property name="multiSelectionEnable" value="true" />
+		 <property name="multiSelectionMode" value="1"/>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="waitNodeKey" />
+		<property name="dealHyperlink" value="true"/>
+	</bean>
+	<bean id="mouseClickShowPanelMediator" class="nc.ui.hr.uif2.mediator.HyperLinkClickMediator">
+		 <property name="model" ref="WaitInterviewAppModel" />
+		 <property name="showUpComponent" ref="waitInterviewCardForm" />
+		 <property name="hyperLinkColumn" value="pk_psndoc" />
+    </bean>
+	<!-- 面试中人员浏览 -->
+	<bean id="InterviewListView" class="nc.ui.rm.interview.view.InterviewListView"
+		init-method="initUI">
+	    <property name="multiSelectionEnable" value="true" />
+		 <property name="multiSelectionMode" value="1"/>
+		<property name="model" ref="InterviewAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="ivingNodeKey" />
+	</bean>
+	<!-- 面试通过人员浏览 -->
+	<bean id="PassInterviewListView" class="nc.ui.rm.interview.view.PassInterviewListView"
+		init-method="initUI">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="multiSelectionEnable" value="true" />
+		 <property name="multiSelectionMode" value="1"/>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="ivingNodeKey" />
+	</bean>
+	<!-- 面试不通过人员浏览 -->
+	<bean id="FailInterviewListView" class="nc.ui.rm.interview.view.FailInterviewListView"
+		init-method="initUI">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="multiSelectionEnable" value="true" />
+		 <property name="multiSelectionMode" value="1"/>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="ivingNodeKey" />
+	</bean>
+	<!-- 待面试人员卡片 -->
+	<bean id="waitInterviewCardForm" class="nc.ui.rm.interview.view.WaitInterviewCardForm"
+		init-method="initUI">
+		<property name="model" ref="WaitInterviewAppModel"></property>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="waitNodeKey" />
+		<property name="actions">
+			<list>
+				<ref bean="firstLineAction" />
+				<ref bean="preLineAction" />
+				<ref bean="nextLineAction" />
+				<ref bean="lastLineAction" />
+			</list>
+		</property>
+		<property name="tabActions">
+			<list>
+				<ref bean="addLineAction" />
+				<ref bean="InsertLineAction" />
+				<ref bean="DelLineAction" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="psndocCardForm" class="nc.ui.rm.interview.view.PsndocCardForm"
+		init-method="initUI">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="psndocNodeKey" />
+	</bean>
+	<bean id="interviewCardForm" class="nc.ui.rm.interview.view.InterviewCardForm"
+		init-method="initUI">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="iverNodeKey" />
+	</bean>
+	<bean id="FirstLineAction" class="nc.ui.uif2.actions.FirstLineAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<!--<bean id="psndocDialog" class="nc.ui.rm.interview.view.PsndocDialog"
+		init-method="initUI">
+		<constructor-arg ref="container" />
+		<property name="models" ref="ModelList" />
+		<property name="contentPanel" ref="psndocCardForm" />
+	</bean>
+	<bean id="InterviewDialog" class="nc.ui.rm.interview.view.InterviewDialog"
+		init-method="initUI">
+		<constructor-arg ref="container" />
+		<property name="model" ref="InterviewAppModel" />
+		<property name="contentPanel" ref="interviewCardForm" />
+	</bean>-->
+	<bean id="waitCardActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="waitInterviewCardForm" />
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="actions">
+			<list>
+				<ref bean="changeInterPlanAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="sendInviteAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="startInterviewAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="queryRMPsnMesAction" />
+				<ref bean="SeparatorAction" />
+				<!--<ref bean="queryWaitAction" />-->
+				<ref bean="SeparatorAction" />
+				<ref bean="IntoPsnlibAction" />
+			</list>
+		</property>
+		<property name="editActions">
+			<list>
+				<ref bean="SaveAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="CancelAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="SaveAction" class="nc.ui.rm.interview.action.SaveInterviewAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="editor" ref="waitInterviewCardForm" />
+		<property name="validator">
+			<list>
+				<ref bean="billFormNotNullValidator" />
+				<ref bean="billFormDataValidator"/>
+				<ref bean="billFormEvalTypeValidator"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="billFormEvalTypeValidator" class="nc.ui.rm.interview.action.validator.InterviewEvalTypeValidator"/>
+	<bean id="billFormDataValidator" class="nc.ui.rm.interview.action.validator.InterviewDataValidator"/>
+	<bean id="billFormNotNullValidator" class="nc.ui.hr.uif2.validator.BillFormNotNullValidator">
+		<property name="billForm" ref="waitInterviewCardForm" />
+	</bean>
+	<bean id="CancelAction" class="nc.ui.hr.uif2.action.CancelAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<!-- 模板容器，负责对模板的统一装载 -->
+	<bean id="templateContainer" class="nc.ui.uif2.editor.TemplateContainer"
+		init-method="load">
+		<property name="context" ref="context" />
+		<property name="nodeKeies">
+			<list>
+				<ref bean="waitNodeKey" />
+				<ref bean="psndocNodeKey" />
+				<ref bean="ivplanNodeKey" />
+				<ref bean="ivingNodeKey" />
+				<ref bean="iverNodeKey" />
+				<ref bean="hiredialognodekey" />
+				<ref bean="rminterview"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="toftpanelActionContributors" class="nc.ui.uif2.actions.ActionContributors">
+		<property name="contributors">
+			<list>
+				<ref bean="waitActions" />
+				<ref bean="waitCardActions" />
+				<ref bean="interviewActions" />
+				<ref bean="passInterviewActions" />
+				<ref bean="failInterviewActions" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="waitActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="WaitInterviewListView" />
+		<property name="actions">
+			<list>
+				<ref bean="changeInterPlanAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="queryWaitAction" />
+				<ref bean="refreshWaitAction" />
+				<ref bean="SeparatorAction" />
+				<!--<ref bean="sendInviteAction" />-->
+				<!--批量发送邮件按钮-->
+				<ref bean="BatchSendInviteAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="startInterviewAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="queryRMPsnMesAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="IntoPsnlibAction" />
+			</list>
+		</property>
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="refreshWaitAction" class="nc.ui.rm.interview.action.RefreshInterviewAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<!-- 查询 -->
+	<bean id="queryWaitAction" class="nc.ui.rm.interview.action.QueryWaitInterviewAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<!--<property name="queryExecutor" ref="queryExcecutor"/>-->
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.interview.model.WaitQueryDelegator">
+				<property name="nodeKey" value="rmwait" />
+				<property name="context" ref="context" />
+				<property name="model" ref="WaitInterviewAppModel" />
+			</bean>
+		</property>
+		<property name="validator">
+			<list>
+				<bean class="nc.ui.hr.uif2.validator.OrgNotNullValidator">
+					<property name="model" ref="WaitInterviewAppModel" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="queryExcecutor" class="nc.ui.rm.interview.action.InterviewQueryExcecutor">
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="sendInviteAction" class="nc.ui.rm.interview.action.SendInviteAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="pk_notice_sort" value="1001Z7HRRM0000602105" />
+	</bean>
+	<bean id="startInterviewAction" class="nc.ui.rm.interview.action.StartInterviewAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="interviewModel" ref="InterviewAppModel" />
+	</bean>
+	<bean id="queryRMPsnMesAction" class="nc.ui.rm.interview.action.QueryRMPsnMesAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="contentPanel" ref="psndocCardForm" />
+	</bean>
+
+	<bean id="changeInterPlanAction" class="nc.ui.rm.interview.action.ChangeInterviewPlanAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="IntoPsnlibAction" class="nc.ui.rm.interview.action.IntoPsnlibAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>	
+	<!--增加批量发送面试邮件按钮 -->
+	<bean id="BatchSendInviteAction" class="nc.ui.rm.interview.action.BatchSendInviteAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		
+	</bean>
+	<bean id="SeparatorAction" class="nc.funcnode.ui.action.SeparatorAction" />
+
+	<bean id="FileManageAction" class="nc.ui.hr.uif2.action.FileManageAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="interviewActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="InterviewListView" />
+		<property name="actions">
+			<list>
+				<ref bean="queryInterviewAction" />
+				<ref bean="refreshAction" />
+				<ref bean="SeparatorAction" />
+				<!--<ref bean="changeInterviewerAction" />-->
+				<ref bean="stopInterviewAction" />
+				<!--<ref bean="sendEmailAction" />-->
+				<ref bean="SeparatorAction" />
+				<ref bean="queryResultAction" />
+				<ref bean="queryPsnInterviewAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="InterviewPassAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="GradeImportAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="ResultImportAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="SendExamAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="ExportResumeAction" />
+		
+			</list>
+		</property>
+		<property name="model" ref="InterviewAppModel" />
+	</bean>
+	
+     <!--导出简历-->
+	<bean id="ExportResumeAction" class="nc.ui.rm.interview.action.ExpInterViewExcel">
+      <property name="model" ref="InterviewAppModel" />
+	</bean>
+	
+    <!--发送体检通知-->
+	<bean id="SendExamAction" class="nc.ui.rm.interview.action.SendExamFormAction">
+      <property name="model" ref="InterviewAppModel" />
+	</bean>
+	
+	<!--成绩导入-->
+	<bean id="GradeImportAction" class="nc.ui.rm.interview.action.GradeImporAction">
+      <property name="model" ref="InterviewAppModel" />
+	</bean>
+	
+	<!--一键面试通过-->
+	<bean id="InterviewPassAction" class="nc.ui.rm.interview.action.InterviewPassAction">
+	  <property name="model" ref="InterviewAppModel" />
+      <property name="passivmodel" ref="PassInterviewAppModel" />
+	</bean>
+	
+	<!--体检结果导入-->
+	<bean id="ResultImportAction" class="nc.ui.rm.interview.action.ResultImportAction">
+      <property name="model" ref="InterviewAppModel" />
+	</bean>
+	
+	<bean id="refreshAction" class="nc.ui.rm.interview.action.RefreshInterviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager"/>
+	</bean>
+	<bean id="queryResultAction" class="nc.ui.rm.interview.action.QueryResultAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="contentPanel" ref="IvReslutListView" />
+	</bean>
+	
+	<bean id="IvReslutListView" class="nc.ui.rm.interview.view.IvResultListView"
+		init-method="initUI">
+		<property name="model">
+			<bean class="nc.ui.uif2.model.BillManageModel"></bean>
+		</property>
+		<property name="multiSelectionEnable" value="false" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="ivplanNodeKey" />
+	</bean>
+	<bean id="changeInterviewerAction" class="nc.ui.rm.interview.action.ChangeInterviewerAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="contentPanel" ref="interviewCardForm" />
+		<property name="validator">
+			<list>
+				<ref bean="billFormEvalTypeValidator"/>
+			</list>
+		</property>
+	</bean>
+	<!-- 查询 -->
+	<bean id="queryInterviewAction" class="nc.ui.rm.interview.action.QueryInterviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.interview.model.InterviewQueryDelegator">
+				<property name="nodeKey" value="rminterview" />
+				<property name="context" ref="context" />
+				<property name="model" ref="InterviewAppModel" />
+			</bean>
+		</property>
+		<property name="validator">
+			<list>
+				<bean class="nc.ui.hr.uif2.validator.OrgNotNullValidator">
+					<property name="model" ref="InterviewAppModel" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="stopInterviewAction" class="nc.ui.rm.interview.action.StopInterviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="failModel" ref="FailInterviewAppModel" />
+	</bean>
+	<bean id="sendEmailAction" class="nc.ui.rm.interview.action.SendEmailAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="pk_notice_sort" value="1001Z7HRRM0000602107" />
+	</bean>
+	<bean id="queryPsnInterviewAction" class="nc.ui.rm.interview.action.QueryRMPsnMesAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="contentPanel" ref="psndocCardForm" />
+	</bean>
+	<bean id="failInterviewActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="FailInterviewListView" />
+		<property name="actions">
+			<list>
+				<ref bean="queryFailInterviewAction" />
+				<ref bean="refreshFailAction" />
+				<ref bean="SeparatorAction" />
+				<!--<ref bean="changeJobInterviewAction" />-->
+				<ref bean="FailIntoPsnlibAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="queryFailResultAction" />
+				<ref bean="queryFailPsnInterviewAction" />
+				<!-- 增加发送婉拒通知 -->
+				<ref bean="SeparatorAction" />
+				<ref bean="sendRefuseAction" />
+			</list>
+		</property>
+		<property name="model" ref="FailInterviewAppModel" />
+	</bean>
+	<!-- 发送婉拒通知-->
+	<bean id="sendRefuseAction" class="nc.ui.rm.interview.action.SendRefuseAction">
+		<property name="model" ref="FailInterviewAppModel"/>
+
+	</bean>
+	<bean id="FailIntoPsnlibAction" class="nc.ui.rm.interview.action.IntoPsnlibAction">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<bean id="refreshFailAction" class="nc.ui.rm.interview.action.RefreshInterviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<bean id="queryFailResultAction" class="nc.ui.rm.interview.action.QueryFailResultAction">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="contentPanel" ref="IvReslutListView" />
+	</bean>
+	<bean id="changeJobInterviewAction" class="nc.ui.rm.interview.action.ChangeJobInterviewAction">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="waitModel" ref="WaitInterviewAppModel" />
+	</bean>
+	<!-- <bean id="intoFailPsnlibAction" class="nc.ui.rm.interview.action.IntoFailPsnlibAction">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>-->
+	<!-- 查询 -->
+	<bean id="queryFailInterviewAction" class="nc.ui.rm.interview.action.QueryFailInterviewAction">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.interview.model.InterviewQueryDelegator">
+				<property name="nodeKey" value="rminterview" />
+				<property name="context" ref="context" />
+				<property name="model" ref="FailInterviewAppModel" />
+			</bean>
+		</property>
+		<property name="validator">
+			<list>
+				<bean class="nc.ui.hr.uif2.validator.OrgNotNullValidator">
+					<property name="model" ref="FailInterviewAppModel" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="queryFailPsnInterviewAction" class="nc.ui.rm.interview.action.QueryRMPsnMesAction">
+		<property name="model" ref="FailInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="contentPanel" ref="psndocCardForm" />
+	</bean>
+	<bean id="passInterviewActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="PassInterviewListView" />
+		<property name="actions">
+			<list>
+				<ref bean="queryPassPsnAction" />
+				<ref bean="refreshPassAction" />
+				<ref bean="SeparatorAction" />
+				<!--<ref bean="addInterviewNumAction" />-->
+				<ref bean="PassIntoPsnlibAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="reqHireAction" />
+				<!--<ref bean="reqTransAction" />-->
+				<ref bean="SeparatorAction" />
+				<ref bean="queryPassResultAction" />
+				<ref bean="queryPassPsndocAction" />
+				<!-- 增加录用通知 -->
+				<ref bean="SeparatorAction" />
+				<ref bean="sendHireAction" />
+			</list>
+		</property>
+		<property name="model" ref="PassInterviewAppModel" />
+	</bean>
+	<!-- 发送录用通知-->
+	<bean id="sendHireAction" class="nc.ui.rm.interview.action.SendHireAction">
+		<property name="model" ref="PassInterviewAppModel"/>
+	</bean>	
+	<bean id="PassIntoPsnlibAction" class="nc.ui.rm.interview.action.IntoPsnlibAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<bean id="refreshPassAction" class="nc.ui.rm.interview.action.RefreshInterviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<bean id="queryPassResultAction" class="nc.ui.rm.interview.action.QueryResultAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="contentPanel" ref="IvReslutListView" />
+	</bean>
+	<!-- 查询 -->
+	<bean id="queryPassPsnAction" class="nc.ui.rm.interview.action.QueryPassPsnAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.interview.model.InterviewQueryDelegator">
+				<property name="nodeKey" value="rminterview" />
+				<property name="context" ref="context" />
+				<property name="model" ref="PassInterviewAppModel" />
+			</bean>
+		</property>
+		<property name="validator">
+			<list>
+				<bean class="nc.ui.hr.uif2.validator.OrgNotNullValidator">
+					<property name="model" ref="PassInterviewAppModel" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<!--  <bean id="intoPassPsnlibAction" class="nc.ui.rm.interview.action.IntoPassPsnlibAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>-->
+	<bean id="reqHireAction" class="nc.ui.rm.interview.action.ReqHireAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="billForm" ref="hireDialogCardForm" />
+		<property name="validator" ref="HireDialogNotNullValidator" />
+		<property name="listView" ref="PassInterviewListView" />
+	</bean>
+	<!--<bean id="hireDialog" class="nc.ui.rm.pub.view.HireBodyEditorDialog"
+		init-method="initUI">
+		<constructor-arg ref="container" />
+		<property name="billForm" ref="hireDialogCardForm" />
+		<property name="validator" ref="HireDialogNotNullValidator" />
+	</bean>-->
+	<bean id="hireDialogCardForm" class="nc.ui.rm.pub.view.HireItemCardForm"
+		init-method="initUI">
+		<property name="model" ref="PassInterviewAppModel"></property>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="hiredialognodekey" />
+	</bean>
+	<bean id="HireDialogNotNullValidator" class="nc.ui.hr.uif2.validator.BillFormNotNullValidator">
+		<property name="billForm" ref="hireDialogCardForm" />
+	</bean>
+	<bean id="reqTransAction" class="nc.ui.rm.interview.action.ReqTransAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="listView" ref="PassInterviewListView" />
+		<property name="cardForm" ref="transPsnCardForm" />
+	</bean>
+	<bean id="transPsnCardForm" class="nc.ui.rm.interview.view.TransPsnCardForm"
+		init-method="initUI">
+
+	</bean>
+	<bean id="queryPassPsndocAction" class="nc.ui.rm.interview.action.QueryRMPsnMesAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="models" ref="ModelList" />
+		<property name="contentPanel" ref="psndocCardForm" />
+	</bean>
+	<bean id="addInterviewNumAction" class="nc.ui.rm.interview.action.AddInterviewNumAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="contentPanel" ref="roundNumCardForm" />
+	</bean>
+	<bean id="roundNumCardForm" class="nc.ui.rm.interview.view.RoundNumCardForm"
+		init-method="initUI">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="iverNodeKey" />
+		<property name="tabActions">
+			<list>
+				<ref bean="addRoundAction" />
+				<ref bean="delRoundAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="addRoundAction" class="nc.ui.rm.interview.action.AddInterviewRoundAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="cardPanel" ref="roundNumCardForm" />
+		<property name="DefaultValueProvider" ref="DefaultValueProvider" />
+	</bean>
+	<bean id="delRoundAction" class="nc.ui.rm.interview.action.DelInterviewRoundAction">
+		<property name="model" ref="PassInterviewAppModel" />
+		<property name="cardPanel" ref="roundNumCardForm" />
+	</bean>
+	<!-- 列表打印按钮 -->
+	<bean id="listPrintGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="actions">
+			<list>
+				<ref bean="directPrintAction" />
+				<ref bean="directPreviewAction" />
+				<ref bean="exportListAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="templatePrintAction" />
+				<ref bean="templatePreviewAction" />
+			</list>
+		</property>
+	</bean>
+	<!-- 卡片打印按钮 -->
+	<bean id="cardPrintGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="cardprint" />
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="6021interview" />
+				<property name="defaultValue" value="打印" />
+				<property name="resId" value="X6021interview001" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="templatePrintAction" />
+				<ref bean="templatePreviewAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="directPreviewAction" class="nc.ui.hr.uif2.action.print.DirectPreviewAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="listView" ref="WaitInterviewListView" />
+	</bean>
+	<bean id="directPrintAction" class="nc.ui.hr.uif2.action.print.DirectPrintAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="listView" ref="WaitInterviewListView" />
+	</bean>
+	<bean id="exportListAction" class="nc.ui.uif2.actions.OutputAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="datasource" ref="datasource" />
+	</bean>
+	<!-- 打印数据源 -->
+	<bean id="datasource" class="nc.ui.hr.uif2.model.HRMetaDataDataSource">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="singleData" value="true" />
+	</bean>
+	<bean id="templatePreviewAction" class="nc.ui.hr.uif2.action.print.TemplatePreviewAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="printDlgParentConatiner" ref="waitInterviewCardForm" />
+		<property name="datasource" ref="datasource" />
+	</bean>
+	<bean id="templatePrintAction" class="nc.ui.hr.uif2.action.print.TemplatePrintAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="printDlgParentConatiner" ref="waitInterviewCardForm" />
+		<property name="datasource" ref="datasource" />
+	</bean>
+	<!-- 分页按钮 -->
+	<bean id="firstLineAction" class="nc.ui.uif2.actions.FirstLineAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="preLineAction" class="nc.ui.uif2.actions.PreLineAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="nextLineAction" class="nc.ui.uif2.actions.NextLineAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="lastLineAction" class="nc.ui.uif2.actions.LastLineAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<!-- tabActions -->
+	<bean id="addLineAction" class="nc.ui.rm.interview.action.PlanAddLineAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="cardPanel" ref="waitInterviewCardForm" />
+		<property name="DefaultValueProvider" ref="DefaultValueProvider" />
+	</bean>
+	<bean id="DefaultValueProvider" class="nc.ui.rm.interview.model.InterviewDefaultValueProvider">
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+	<bean id="DelLineAction" class="nc.ui.rm.interview.action.DelInterviewPlanAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="cardPanel" ref="waitInterviewCardForm" />
+	</bean>
+	<bean id="InsertLineAction" class="nc.ui.rm.interview.action.InsertInterviewPlanAction">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="cardPanel" ref="waitInterviewCardForm" />
+	</bean>
+	<!-- 卡片工具栏 -->
+	<bean id="editorToolBarPanel" class="nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="titleAction" ref="editorReturnAction" />
+		<property name="actions">
+			<list>
+				<ref bean="firstLineAction" />
+				<ref bean="preLineAction" />
+				<ref bean="nextLineAction" />
+				<ref bean="lastLineAction" />
+			</list>
+		</property>
+	</bean>
+	<!-- 返回按钮 -->
+	<bean id="editorReturnAction" class="nc.ui.uif2.actions.ShowMeUpAction">
+		<property name="goComponent" ref="WaitInterviewListView" />
+	</bean>
+
+
+
+	<bean id="TabbedPaneNamePreProcessor" class="nc.ui.rm.interview.model.TabbedPaneNameHandler">
+		<property name="container" ref="container" />
+		<property name="models" ref="ModelList" />
+	</bean>
+
+	<!--
+		界面元素 ***********************************************************
+	-->
+	<bean id="orgPanel" class="nc.ui.hr.uif2.view.PrimaryOrgPanel"
+		init-method="initUI">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="pk_orgtype" value="HRORGTYPE00000000000" />
+	</bean>
+	<bean id="container" class="nc.ui.uif2.TangramContainer"
+		init-method="initUI">
+		<property name="tangramLayoutRoot">
+			<bean class="nc.ui.uif2.tangramlayout.node.TBNode">
+				<property name="showMode" value="CardLayout" />
+				<property name="tabs">
+					<list>
+						<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+							<property name="showMode" value="NoDivider" />
+							<property name="up">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="orgPanel" />
+								</bean>
+							</property>
+							<property name="down">
+								<bean class="nc.ui.uif2.tangramlayout.node.TBNode">
+									<property name="tabs">
+										<list>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021interview" />
+														<property name="defaultValue" value="待面试" />
+														<property name="resId" value="X6021interview002" />
+													</bean>
+												</property>
+												<property name="component" ref="WaitInterviewListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021interview" />
+														<property name="defaultValue" value="面试进行中" />
+														<property name="resId" value="X6021interview003" />
+													</bean>
+												</property>
+												<property name="component" ref="InterviewListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021interview" />
+														<property name="defaultValue" value="面试未通过" />
+														<property name="resId" value="X6021interview004" />
+													</bean>
+												</property>
+												<property name="component" ref="FailInterviewListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021interview" />
+														<property name="defaultValue" value="面试通过" />
+														<property name="resId" value="X6021interview005" />
+													</bean>
+												</property>
+												<property name="component" ref="PassInterviewListView" />
+											</bean>
+										</list>
+									</property>
+								</bean>
+							</property>
+							<property name="dividerLocation" value="30f" />
+						</bean>
+						<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+							<property name="showMode" value="NoDivider" />
+							<property name="up">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="editorToolBarPanel" />
+								</bean>
+							</property>
+							<property name="down">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="waitInterviewCardForm" />
+								</bean>
+							</property>
+							<property name="dividerLocation" value="26f" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="model" ref="WaitInterviewAppModel" />
+	</bean>
+
+	<bean id="ClosingListener" class="nc.ui.uif2.FunNodeClosingHandler">
+		<property name="model" ref="WaitInterviewAppModel" />
+		<property name="saveaction" ref="SaveAction" />
+		<property name="cancelaction" ref="CancelAction" />
+	</bean>
+</beans>

@@ -1,0 +1,1097 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- 环境变量 -->
+	<bean id="context" class="nc.vo.uif2.LoginContext" />
+
+	<bean id="applynodekey" class="java.lang.String">
+		<constructor-arg value="applypsndoc" />
+	</bean>
+	<bean id="primarynodekey" class="java.lang.String">
+		<constructor-arg value="primarypsndoc" />
+	</bean>
+	<bean id="interviewnodekey" class="java.lang.String">
+		<constructor-arg value="interviewpsndoc" />
+	</bean>
+	<bean id="hirenodekey" class="java.lang.String">
+		<constructor-arg value="hirepsndoc" />
+	</bean>
+	<bean id="checkinnodekey" class="java.lang.String">
+		<constructor-arg value="checkinpsndoc" />
+	</bean>
+	<bean id="hiredialognodekey" class="java.lang.String">
+		<constructor-arg value="hiredialog" />
+	</bean>
+	<bean id="plandialognodekey" class="java.lang.String">
+		<constructor-arg value="plandialog" />
+	</bean>
+	<bean id="resouceCode" class="java.lang.String">
+		<constructor-arg value="60210psndoc" />
+	</bean>
+	<bean id="ModelList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="ApplyAppModel" />
+				<ref bean="PrimaryAppModel" />
+				<ref bean="InterviewAppModel" />
+				<ref bean="HireAppModel" />
+				<ref bean="CheckinAppModel" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- 对象转换器工厂，由此获取操作对象的特征信息 -->
+	<bean id="boadatorfactory" class="nc.vo.bd.meta.BDObjectAdpaterFactory" />
+
+	<bean id="ReApplyAppModel" class="nc.ui.rm.psndoc.model.RMPsndocAppModel">
+		<property name="service" ref="manageModelService" />
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="ApplyAppModel" class="nc.ui.rm.psndoc.model.RMPsndocAppModel">
+		<property name="service" ref="manageModelService" />
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="PrimaryAppModel" class="nc.ui.uif2.model.BillManageModel">
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="InterviewAppModel" class="nc.ui.uif2.model.BillManageModel">
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="HireAppModel" class="nc.ui.uif2.model.BillManageModel">
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="CheckinAppModel" class="nc.ui.uif2.model.BillManageModel">
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+
+	<bean id="manageModelService" class="nc.ui.rm.psndoc.model.RMPsndocAppModelService" />
+
+	<!-- 数据模型管理器，主要负责各种方式的模型初始化 -->
+	<bean id="modelDataManager" class="nc.ui.rm.psndoc.model.RMPsndocModelDataManager">
+		<property name="models" ref="ModelList" />
+		<property name="context" ref="context" />
+	</bean>
+
+	<bean id="ListAndCardPreProcessor" class="nc.ui.rm.pub.view.RMViewShowingJudge"
+		init-method="initUI">
+		<property name="listView" ref="applyListView" />
+		<property name="cardView" ref="applyCardForm" />
+	</bean>
+
+	<!-- 应聘登记人员浏览 -->
+	<bean id="reApplyListView" class="nc.ui.rm.psndoc.view.RMPsndocListView"
+		init-method="initUI">
+		<property name="model" ref="ReApplyAppModel" />
+		<property name="multiSelectionMode" value="1" />
+		<property name="multiSelectionEnable" value="true" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="applynodekey" />
+	</bean>
+	<!-- 在此添加超链接的mediator -->
+	<bean id="mouseClickShowPanelMediator" class="nc.ui.hr.uif2.mediator.HyperLinkClickMediator">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="showUpComponent" ref="applyCardForm" />
+		<property name="hyperLinkColumn" value="name" />
+	</bean>
+
+	<!-- 应聘登记人员浏览 -->
+	<bean id="applyListView" class="nc.ui.rm.psndoc.view.RMPsndocListView"
+		init-method="initUI">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="multiSelectionMode" value="1" />
+		<property name="multiSelectionEnable" value="true" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="applynodekey" />
+		<property name="dealHyperlink" value="true" />
+	</bean>
+	<!-- 初选通过人员浏览 -->
+	<bean id="primaryListView" class="nc.ui.rm.psndoc.view.RMPsndocBaseListView"
+		init-method="initUI">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="multiSelectionMode" value="1" />
+		<property name="multiSelectionEnable" value="true" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="primarynodekey" />
+	</bean>
+	<!-- 面试中人员浏览 -->
+	<bean id="interviewListView" class="nc.ui.rm.psndoc.view.RMPsndocBaseListView"
+		init-method="initUI">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="interviewnodekey" />
+	</bean>
+	<!-- 录用中人员浏览 -->
+	<bean id="hireListView" class="nc.ui.rm.psndoc.view.RMPsndocBaseListView"
+		init-method="initUI">
+		<property name="model" ref="HireAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="hirenodekey" />
+	</bean>
+	<!-- 报到中人员浏览 -->
+	<bean id="checkinListView" class="nc.ui.rm.psndoc.view.RMPsndocBaseListView"
+		init-method="initUI">
+		<property name="model" ref="CheckinAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="checkinnodekey" />
+	</bean>
+
+	<!-- 应聘登记人员卡片 -->
+	<bean id="applyCardForm" class="nc.ui.rm.psndoc.view.RMPsndocCardForm"
+		init-method="initUI">
+		<property name="model" ref="ApplyAppModel"></property>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="applynodekey" />
+		<property name="tabActions">
+			<list>
+				<ref bean="addLineAction" />
+				<ref bean="InsertLineAction" />
+				<ref bean="DelLineAction" />
+				<ref bean="copyLineAction" />
+				<ref bean="PasteLineAction" />
+				<ref bean="barSeparator" />
+				<ref bean="bodyMaxAction" />
+			</list>
+		</property>
+	</bean>
+<!-- 应聘登记人员卡片 -->
+	<bean id="showCardForm" class="nc.ui.rm.psndoc.view.RMPsndocCardForm"
+		init-method="initUI">
+		<property name="model">
+			<bean class="nc.ui.uif2.model.BillManageModel"/>
+		</property>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="applynodekey" />
+	</bean>
+
+	<!--
+		查看应聘信息Dialog <bean id="applyCardDialog"
+		class="nc.ui.rm.psndoc.view.RMPsndocDialog" init-method="initUI">
+		<constructor-arg ref="container" /> <property name="cardForm"> <bean
+		class="nc.ui.rm.psndoc.view.RMPsndocCardForm" init-method="initUI">
+		<property name="model" ref="ApplyAppModel"></property> <property
+		name="templateContainer" ref="templateContainer" /> <property
+		name="nodekey" ref="applynodekey" /> </bean> </property> </bean>
+	-->
+	<!-- 录用申请Dialog -->
+	<bean id="hireDialogCardForm" class="nc.ui.rm.pub.view.HireItemCardForm"
+		init-method="initUI">
+		<property name="model" ref="ApplyAppModel"></property>
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="hiredialognodekey" />
+	</bean>
+	<bean id="HireDialogNotNullValidator" class="nc.ui.hr.uif2.validator.BillFormNotNullValidator">
+		<property name="billForm" ref="hireDialogCardForm" />
+	</bean>
+	<!-- 查看面试结果listview  -->
+	<bean id="interviewPlanListView" class="nc.ui.hr.uif2.view.HrBillListView"
+		init-method="initUI">
+		<property name="model" ref="CheckinAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="nodekey" ref="plandialognodekey" />
+	</bean>
+	<!--
+		查看面试结果Dialog <bean id="interviewDialog"
+		class="nc.ui.rm.psndoc.view.InterviewDialog" init-method="initUI">
+		<constructor-arg ref="container" /> <property name="listView"> <bean
+		class="nc.ui.hr.uif2.view.HrBillListView" init-method="initUI">
+		<property name="model"> <bean
+		class="nc.ui.uif2.model.BillManageModel"> <property
+		name="businessObjectAdapterFactory" ref="boadatorfactory" /> <property
+		name="context" ref="context" /> </bean> </property> <property
+		name="templateContainer" ref="templateContainer" /> <property
+		name="nodekey" ref="plandialognodekey" /> </bean> </property> </bean>
+	-->
+	<!--
+		查看录用信息Dialog <bean id="hireInfoDialog"
+		class="nc.ui.rm.pub.view.HireBodyEditorDialog" init-method="initUI">
+		<constructor-arg ref="container" /> <property name="billForm"> <bean
+		class="nc.ui.rm.pub.view.HireItemCardForm" init-method="initUI">
+		<property name="model" ref="CheckinAppModel" /> <property
+		name="templateContainer" ref="templateContainer" /> <property
+		name="nodekey" ref="hiredialognodekey" /> </bean> </property>
+		<property name="onlyCloseBtn" value="true" /> <property
+		name="validator" ref="HireDialogNotNullValidator" /> </bean>
+	-->
+	<!-- 模板容器，负责对模板的统一装载 -->
+	<bean id="templateContainer" class="nc.ui.uif2.editor.TemplateContainer"
+		init-method="load">
+		<property name="context" ref="context" />
+		<property name="nodeKeies">
+			<list>
+				<ref bean="applynodekey" />
+				<ref bean="primarynodekey" />
+				<ref bean="interviewnodekey" />
+				<ref bean="hirenodekey" />
+				<ref bean="checkinnodekey" />
+				<ref bean="hiredialognodekey" />
+				<ref bean="plandialognodekey" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="toftpanelActionContributors" class="nc.ui.uif2.actions.ActionContributors">
+		<property name="contributors">
+			<list>
+				<ref bean="applyActions" />
+				<ref bean="applyCardActions" />
+				<ref bean="primaryActions" />
+				<ref bean="interviewActions" />
+				<ref bean="hireActions" />
+				<ref bean="checkinActions" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="applyActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="applyListView" />
+		<property name="actions">
+			<list>
+				<ref bean="AddActionGroup" />
+				<ref bean="EditAction" />
+				<ref bean="DeleteAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="QueryApplyAction" />
+				<ref bean="RefreshAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="BusinessMenu" />
+				<ref bean="ShowReEmployeeAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="AnalyseAction" />
+				<ref bean="FileManageAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="listPrintGroup" />
+				<ref bean="JlczMenu" />
+				<ref bean="Dj2Cxtg" />
+			</list>
+		</property>
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+
+	<bean id="applyCardActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="applyCardForm" />
+		<property name="model" ref="ApplyAppModel" />
+		<property name="actions">
+			<list>
+				<ref bean="AddAction" />
+				<ref bean="EditAction" />
+				<ref bean="DeleteAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="RefreshAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="BusinessMenu" />
+				<ref bean="AnalyseAction" />
+				<ref bean="FileManageAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="cardPrintGroup" />
+			</list>
+		</property>
+		<property name="editActions">
+			<list>
+				<ref bean="SaveAction" />
+				<ref bean="SaveAddAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="CancelAction" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 最大化按钮 -->
+	<bean id="bodyMaxAction" class="nc.ui.hr.uif2.action.MaxBodyViewAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+		<property name="defaultStatus" value="true" />
+		<property name="enableForAllTabs" value="true" />
+		<property name="enableWhenEditingOnly" value="false" />
+	</bean>
+
+	<bean id="headMaxAction" class="nc.ui.hr.uif2.action.MaxHeadViewAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+		<property name="defaultStatus" value="true" />
+		<property name="enableForAllTabs" value="true" />
+		<property name="enableWhenEditingOnly" value="false" />
+	</bean>
+
+	<bean id="primaryActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="primaryListView" />
+		<property name="actions">
+			<list>
+				<ref bean="QueryPrimaryAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="CancelPrimaryAction" />
+				<ref bean="ArrangeAction" />
+				<!--<ref bean="PrimaryHireAction" />
+				<ref bean="PrimaryAppTransAction" />-->
+				<ref bean="PrimaryIntoAction" />
+				<ref bean="PrimaryPsndocInfoAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="primaryListPrintActionGroup" />
+				<ref bean="SeparatorAction" />
+				<ref bean="CxtgJlczMenu" />
+				<ref bean="SeparatorAction" />
+				<ref bean="Cxtg2msz"/>
+			</list>
+		</property>
+		<property name="model" ref="PrimaryAppModel" />
+	</bean>
+
+
+	<bean id="interviewActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="interviewListView" />
+		<property name="actions">
+			<list>
+				<ref bean="QueryInterviewAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="ShowInterviewResultAction" />
+				<ref bean="IVPsndocInfoAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="interviewListPrintActionGroup" />
+			</list>
+		</property>
+		<property name="model" ref="InterviewAppModel" />
+	</bean>
+	
+	<bean id="ImportAction" class="nc.ui.rm.psndoc.action.ImporAction">
+    
+      <property name="model" ref="InterviewAppModel" >
+      </property>
+		
+	</bean>
+
+	<bean id="hireActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="hireListView" />
+		<property name="actions">
+			<list>
+				<ref bean="QueryHireAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="HireIVResultAction" />
+				<ref bean="HirePsndocInfoAction" />
+			</list>
+		</property>
+		<property name="model" ref="HireAppModel" />
+	</bean>
+
+	<bean id="checkinActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg ref="checkinListView" />
+		<property name="actions">
+			<list>
+				<ref bean="QueryCheckinAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="CheckinIVResultAction" />
+				<ref bean="CheckinPsndocInfoAction" />
+				<ref bean="ShowHireInfoAction" />
+			</list>
+		</property>
+		<property name="model" ref="CheckinAppModel" />
+	</bean>
+
+	<bean id="SeparatorAction" class="nc.funcnode.ui.action.SeparatorAction" />
+	<bean id="AddAction" class="nc.ui.rm.psndoc.action.AddRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="formEditor" ref="applyCardForm" />
+		<property name="defaultValueProvider" ref="DefaultValueProvider" />
+	</bean>
+	<bean id="DefaultValueProvider" class="nc.ui.rm.psndoc.model.RMPsndocDefaultValueProvider" />
+	<bean id="EditAction" class="nc.ui.rm.psndoc.action.EditRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="operateCode" value="Edit" />
+		<property name="mdOperateCode" value="Edit" />
+		<property name="resourceCode" ref="resouceCode" />
+	</bean>
+	<bean id="CancelAction" class="nc.ui.rm.psndoc.action.CancelRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="QueryApplyAction" class="nc.ui.rm.psndoc.action.QueryApplyPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.psndoc.model.RMPsndocQueryDelegator">
+				<property name="nodeKey" ref="applynodekey" />
+				<property name="context" ref="context" />
+				<property name="model" ref="ApplyAppModel" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="RefreshAction" class="nc.ui.rm.psndoc.action.RefreshRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<bean id="SaveAction" class="nc.ui.rm.psndoc.action.SaveRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="editor" ref="applyCardForm" />
+		<property name="validator">
+			<list>
+				<ref bean="billFormNotNullValidator" />
+				<ref bean="DateValidator" />
+				<ref bean="JobValidator" />
+			</list>
+		</property>
+	</bean>
+	<bean id="billFormNotNullValidator" class="nc.ui.hr.uif2.validator.BillFormNotNullValidator">
+		<property name="billForm" ref="applyCardForm" />
+	</bean>
+	<bean id="DateValidator" class="nc.vo.rm.psndoc.validator.RMPsndocDateValidator" />
+	<bean id="JobValidator" class="nc.vo.rm.psndoc.validator.RMPsndocUpdateValidator" />
+
+	<bean id="SaveAddAction" class="nc.ui.rm.psndoc.action.SaveAddRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="addAction" ref="AddAction" />
+		<property name="saveAction" ref="SaveAction" />
+	</bean>
+	<bean id="DeleteAction" class="nc.ui.rm.psndoc.action.DeleteRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="operateCode" value="Delete" />
+		<property name="mdOperateCode" value="Delete" />
+		<property name="resourceCode" ref="resouceCode" />
+	</bean>
+
+	<bean id="DownloadAction" class="nc.ui.rm.psndoc.action.DownloadResumeAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="AnalyseAction" class="nc.ui.rm.psndoc.action.AnalysePsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="PassAction" class="nc.ui.rm.psndoc.action.PassRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="primaryModel" ref="PrimaryAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<bean id="DcjlAction" class="nc.ui.rm.psndoc.action.DcjlAction">
+	    <property name="model" ref="ApplyAppModel" />
+	    <property name="status" value = "1" ></property>
+	</bean>
+	<bean id="DcjlHzAction" class="nc.ui.rm.psndoc.action.DcjlHzAction">
+	    <property name="model" ref="ApplyAppModel" />
+	    <property name="status" value = "1" ></property>
+	</bean>
+	
+	<bean id="CxtgDcjlAction" class="nc.ui.rm.psndoc.action.DcjlAction">
+	    <property name="model" ref="PrimaryAppModel" />
+	    <property name="status" value = "2" ></property>
+	</bean>
+	<bean id="CxtgDcjlHzAction" class="nc.ui.rm.psndoc.action.DcjlHzAction">
+	    <property name="model" ref="PrimaryAppModel" />
+	    <property name="status" value = "2" ></property>
+	</bean>
+	<bean id="Dj2Cxtg" class="nc.ui.rm.psndoc.action.Dj2Cxtg">
+	    <property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="Cxtg2msz" class="nc.ui.rm.psndoc.action.Cxtg2msz">
+	    <property name="model" ref="PrimaryAppModel" />
+		<property name="interviewModel" ref="InterviewAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<bean id="ApplyHireAction" class="nc.ui.rm.psndoc.action.HireRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="billform" ref="hireDialogCardForm" />
+		<property name="hireValidator" ref="HireDialogNotNullValidator" />
+	</bean>
+	<bean id="ApplyTransAction" class="nc.ui.rm.psndoc.action.ReqTranAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="listView" ref="applyListView" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+	<bean id="PrimaryAppTransAction" class="nc.ui.rm.psndoc.action.ReqTranAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="listView" ref="applyListView" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+
+	<bean id="ApplyIntoAction" class="nc.ui.rm.psndoc.action.IntoPsnlibAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="applyStatu" value="1" />
+	</bean>
+	<bean id="PrimaryIntoAction" class="nc.ui.rm.psndoc.action.IntoPsnlibAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="applyStatu" value="2" />
+	</bean>
+	<bean id="QueryPrimaryAction" class="nc.ui.rm.psndoc.action.QueryPrimaryPsndocAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.psndoc.model.RMPsndocQueryDelegator">
+				<property name="nodeKey" ref="applynodekey" />
+				<property name="context" ref="context" />
+				<property name="model" ref="ApplyAppModel" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="ShowReEmployeeAction" class="nc.ui.rm.psndoc.action.ShowReEmployeeAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="reApplyModel" ref="ReApplyAppModel" />
+		<property name="listView" ref="reApplyListView" />
+		<property name="actions">
+			<list>
+				<ref bean="DelReApplyAction" />
+				<ref bean="IntoApplyAction" />
+				<ref bean="ShowPsnJob" />
+			</list>
+		</property>
+	</bean>
+	<bean id="IntoApplyAction" class="nc.ui.rm.psndoc.action.IntoApplyAction">
+		<property name="model" ref="ReApplyAppModel" />
+		<property name="applyModel" ref="ApplyAppModel" />
+		<property name="reListView" ref="reApplyListView" />
+	</bean>
+	<bean id="ShowPsnJob" class="nc.ui.rm.psndoc.action.ShowPsnJobAction">
+		<property name="model" ref="ReApplyAppModel" />
+	</bean>
+	<bean id="DelReApplyAction" class="nc.ui.rm.psndoc.action.DeleteReEmployeeAction">
+		<property name="model" ref="ReApplyAppModel" />
+		<property name="reListView" ref="reApplyListView" />
+	</bean>
+
+	<bean id="CancelPrimaryAction" class="nc.ui.rm.psndoc.action.CancelPrimaryAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="applyModel" ref="ApplyAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<bean id="ArrangeAction" class="nc.ui.rm.psndoc.action.ArrangeInterviewAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="interviewModel" ref="InterviewAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<bean id="PrimaryHireAction" class="nc.ui.rm.psndoc.action.HireRMPsndocAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="billform" ref="hireDialogCardForm" />
+		<property name="hireValidator" ref="HireDialogNotNullValidator" />
+	</bean>
+	<bean id="PrimaryPsndocInfoAction" class="nc.ui.rm.psndoc.action.ShowPsndocInfoAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<!--<property name="dialog" ref="applyCardDialog" />  -->
+		<property name="cardForm" ref="showCardForm"/>
+	</bean>
+
+	<bean id="ShowInterviewResultAction" class="nc.ui.rm.psndoc.action.ShowInterviewResultAction">
+		<property name="model" ref="InterviewAppModel" />
+		<!--<property name="dialog" ref="interviewDialog" />  -->
+		<property name="listview" ref="interviewPlanListView"/>
+		<property name="currPage" value="0" />
+	</bean>
+	<bean id="IVPsndocInfoAction" class="nc.ui.rm.psndoc.action.ShowPsndocInfoAction">
+		<property name="model" ref="InterviewAppModel" />
+		<!--<property name="dialog" ref="applyCardDialog" />  -->
+		<property name="cardForm" ref="showCardForm"/>
+	</bean>
+
+	<bean id="HireIVResultAction" class="nc.ui.rm.psndoc.action.ShowInterviewResultAction">
+		<property name="model" ref="HireAppModel" />
+		<!--  <property name="dialog" ref="interviewDialog" />-->
+		<property name="listview" ref="interviewPlanListView"/>
+		<property name="currPage" value="1" />
+	</bean>
+	<bean id="HirePsndocInfoAction" class="nc.ui.rm.psndoc.action.ShowPsndocInfoAction">
+		<property name="model" ref="HireAppModel" />
+	    <!--<property name="dialog" ref="applyCardDialog" />  -->
+		<property name="cardForm" ref="showCardForm"/>
+	</bean>
+
+	<bean id="CheckinPsndocInfoAction" class="nc.ui.rm.psndoc.action.ShowPsndocInfoAction">
+		<property name="model" ref="CheckinAppModel" />
+		<!--<property name="dialog" ref="applyCardDialog" />  -->
+		<property name="cardForm" ref="showCardForm"/>
+	</bean>
+	<bean id="CheckinIVResultAction" class="nc.ui.rm.psndoc.action.ShowInterviewResultAction">
+		<property name="model" ref="CheckinAppModel" />
+			<!-- <property name="dialog" ref="interviewDialog" /> -->
+		<property name="listview" ref="interviewPlanListView"/>
+		<property name="currPage" value="2" />
+	</bean>
+	<bean id="ShowHireInfoAction" class="nc.ui.rm.psndoc.action.ShowHireInfoAction">
+		<property name="model" ref="CheckinAppModel" />
+	    <property name="billForm" ref="hireDialogCardForm"/>
+		<!-- <property name="dialog" ref="hireInfoDialog" /> -->
+	</bean>
+	<bean id="QueryInterviewAction" class="nc.ui.rm.psndoc.action.QueryInterviewPsndocAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.psndoc.model.RMPsnIVQueryDelegator">
+				<property name="nodeKey" ref="interviewnodekey" />
+				<property name="context" ref="context" />
+				<property name="model" ref="InterviewAppModel" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="QueryHireAction" class="nc.ui.rm.psndoc.action.QueryHirePsndocAction">
+		<property name="model" ref="HireAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.psndoc.model.RMPsnHireQueryDelegator">
+				<property name="nodeKey" ref="hirenodekey" />
+				<property name="context" ref="context" />
+				<property name="model" ref="HireAppModel" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="QueryCheckinAction" class="nc.ui.rm.psndoc.action.QueryCheckinPsndocAction">
+		<property name="model" ref="CheckinAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.psndoc.model.RMPsnCheckinQueryDelegator">
+				<property name="nodeKey" ref="checkinnodekey" />
+				<property name="context" ref="context" />
+				<property name="model" ref="CheckinAppModel" />
+			</bean>
+		</property>
+	</bean>
+
+	<!--
+		辅助功能菜单按钮 <bean id="AssistActionGroup"
+		class="nc.funcnode.ui.action.MenuAction"> <property name="code"
+		value="assist"/> <property name="name" value="辅助功能"/> <property
+		name="actions"> <list> <ref bean="FileManageAction" /> </list>
+		</property> </bean>
+	-->
+	<bean id="FileManageAction" class="nc.ui.hr.uif2.action.FileManageAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<!-- 新增按钮组 -->
+	<bean id="AddActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="AddResume" />
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="6021psndoc" />
+				<property name="defaultValue" value="新增" />
+				<property name="resId" value="X6021psndoc0001" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="AddAction" />
+				<ref bean="DownloadAction" />
+			</list>
+		</property>
+	</bean>
+	<!-- 业务操作 -->
+	<bean id="BusinessMenu" class="nc.funcnode.ui.action.MenuAction">
+		<property name="code" value="Business" />
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="6021psndoc" />
+				<property name="defaultValue" value="业务操作" />
+				<property name="resId" value="X6021psndoc0002" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="PassAction" />
+				<!--<ref bean="ApplyHireAction"/> 
+				<ref bean="ApplyTransAction"/>-->
+				<ref bean="ApplyIntoAction" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 简历操作 -->
+	<bean id="JlczMenu" class="nc.funcnode.ui.action.MenuAction">
+		<property name="code" value="Jlcz" />
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="简历操作" />
+				<property name="defaultValue" value="简历操作" />
+				<property name="resId" value="X6021psndoc0002" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="DcjlAction" />
+				<ref bean="DcjlHzAction" />
+				<!--<ref bean="ApplyTransAction" />
+				<ref bean="ApplyIntoAction" />-->
+			</list>
+		</property>
+	</bean>
+	
+	
+		<!-- 初选通过简历操作 -->
+	<bean id="CxtgJlczMenu" class="nc.funcnode.ui.action.MenuAction">
+		<property name="code" value="CxtgJlcz" />
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="简历操作" />
+				<property name="defaultValue" value="简历操作" />
+				<property name="resId" value="X6021psndoc0002" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="CxtgDcjlAction" />
+				<ref bean="CxtgDcjlHzAction" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 列表打印按钮 -->
+	<bean id="listPrintGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="actions">
+			<list>
+				<ref bean="directPrintAction" />
+				<ref bean="directPreviewAction" />
+				<ref bean="exportListAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="templatePrintAction" />
+				<ref bean="templatePreviewAction" />
+			</list>
+		</property>
+	</bean>
+	<!-- 卡片打印按钮 -->
+	<bean id="cardPrintGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="cardprint" />
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="6021psndoc" />
+				<property name="defaultValue" value="打印" />
+				<property name="resId" value="X6021psndoc0003" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="templatePrintAction" />
+				<ref bean="templatePreviewAction" />
+				<ref bean="exportCardAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="directPreviewAction" class="nc.ui.hr.uif2.action.print.DirectPreviewAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<bean id="directPrintAction" class="nc.ui.hr.uif2.action.print.DirectPrintAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<bean id="exportListAction" class="nc.ui.hr.uif2.action.print.ExportListAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="listView" ref="applyListView" />
+	</bean>
+	<!-- 打印数据源 -->
+	<bean id="datasource" class="nc.ui.rm.psndoc.model.RMPsndocPrintDataSource">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="singleData" value="true" />
+	</bean>
+	<bean id="templatePreviewAction" class="nc.ui.hr.uif2.action.print.TemplatePreviewAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="datasource" />
+	</bean>
+	<bean id="templatePrintAction" class="nc.ui.hr.uif2.action.print.TemplatePrintAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="datasource" />
+	</bean>
+	<bean id="exportCardAction" class="nc.ui.hr.uif2.action.print.ExportCardAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="datasource" />
+		<property name="nodeKey" ref="applynodekey" />
+	</bean>
+	<!-- 分页按钮 -->
+	<bean id="firstLineAction" class="nc.ui.uif2.actions.FirstLineAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="preLineAction" class="nc.ui.uif2.actions.PreLineAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="nextLineAction" class="nc.ui.uif2.actions.NextLineAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<bean id="lastLineAction" class="nc.ui.uif2.actions.LastLineAction">
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+	<!-- tabActions -->
+	<bean id="addLineAction" class="nc.ui.rm.psndoc.action.AddLineRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+	</bean>
+	<bean id="DelLineAction" class="nc.ui.rm.psndoc.action.DelLineRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+	</bean>
+	<bean id="InsertLineAction" class="nc.ui.rm.psndoc.action.InsertLineRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+	</bean>
+	<bean id="copyLineAction" class="nc.ui.rm.psndoc.action.CopyLineRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+	</bean>
+	<bean id="PasteLineAction" class="nc.ui.rm.psndoc.action.PasteLineRMPsndocAction">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="cardPanel" ref="applyCardForm" />
+	</bean>
+
+	<!-- 卡片工具栏 -->
+	<bean id="editorToolBarPanel" class="nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="titleAction" ref="editorReturnAction" />
+		<property name="actions">
+			<list>
+				<ref bean="FileManageAction" />
+				<ref bean="barSeparator" />
+				<ref bean="firstLineAction" />
+				<ref bean="preLineAction" />
+				<ref bean="nextLineAction" />
+				<ref bean="lastLineAction" />
+				<ref bean="headMaxAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="barSeparator" class="nc.ui.pub.beans.ActionsBar$ActionsBarSeparator" />
+	<!-- 返回按钮 -->
+	<bean id="editorReturnAction" class="nc.ui.uif2.actions.ShowMeUpAction">
+		<property name="goComponent" ref="applyListView" />
+	</bean>
+
+	<bean id="container" class="nc.ui.uif2.TangramContainer"
+		init-method="initUI">
+		<property name="tangramLayoutRoot">
+			<bean class="nc.ui.uif2.tangramlayout.node.TBNode">
+				<property name="showMode" value="CardLayout" />
+				<property name="tabs">
+					<list>
+						<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+							<property name="showMode" value="NoDivider" />
+							<property name="up">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="orgPanel" />
+								</bean>
+							</property>
+							<property name="down">
+								<bean class="nc.ui.uif2.tangramlayout.node.TBNode">
+									<property name="tabs">
+										<list>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021psndoc" />
+														<property name="defaultValue" value="应聘登记人员" />
+														<property name="resId" value="X6021psndoc0004" />
+													</bean>
+												</property>
+												<property name="component" ref="applyListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021psndoc" />
+														<property name="defaultValue" value="初选通过人员" />
+														<property name="resId" value="X6021psndoc0005" />
+													</bean>
+												</property>
+												<property name="component" ref="primaryListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021psndoc" />
+														<property name="defaultValue" value="面试中人员" />
+														<property name="resId" value="X6021psndoc0006" />
+													</bean>
+												</property>
+												<property name="component" ref="interviewListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021psndoc" />
+														<property name="defaultValue" value="录用中人员" />
+														<property name="resId" value="X6021psndoc0007" />
+													</bean>
+												</property>
+												<property name="component" ref="hireListView" />
+											</bean>
+											<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+												<property name="name">
+													<bean class="nc.ui.uif2.I18nFB ">
+														<property name="resDir" value="6021psndoc" />
+														<property name="defaultValue" value="报到中人员" />
+														<property name="resId" value="X6021psndoc0008" />
+													</bean>
+												</property>
+												<property name="component" ref="checkinListView" />
+											</bean>
+										</list>
+									</property>
+								</bean>
+							</property>
+							<property name="dividerLocation" value="30f" />
+						</bean>
+						<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+							<property name="showMode" value="NoDivider" />
+							<property name="up">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="editorToolBarPanel" />
+								</bean>
+							</property>
+							<property name="down">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="applyCardForm" />
+								</bean>
+							</property>
+							<property name="dividerLocation" value="26f" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="model" ref="ApplyAppModel" />
+	</bean>
+
+	<bean id="TabbedPaneNamePreProcessor" class="nc.ui.rm.psndoc.model.TabbedPaneNameHandler">
+		<property name="container" ref="container" />
+		<property name="models" ref="ModelList" />
+	</bean>
+	<bean id="ClosingListener" class="nc.ui.uif2.FunNodeClosingHandler">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="saveaction" ref="SaveAction" />
+		<property name="cancelaction" ref="CancelAction" />
+	</bean>
+	<!--
+		界面元素 ***********************************************************
+	-->
+	<bean id="orgPanel" class="nc.ui.hr.uif2.view.PrimaryOrgPanel"
+		init-method="initUI">
+		<property name="model" ref="ApplyAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="pk_orgtype" value="HRORGTYPE00000000000" />
+	</bean>
+	<!-- 初选通过人员 打印数据源 -->
+	<bean id="primaryDatasource" class="nc.ui.rm.psndoc.model.RMPsndocPrintDataSource">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="singleData" value="true" />
+	</bean>
+	<!-- 初选通过人员打印按钮  begin-->
+	<bean id="primaryTemplatePreviewAction" class="nc.ui.hr.uif2.action.print.TemplatePreviewAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="primaryDatasource" />
+	</bean>
+	<bean id="primaryTemplatePrintAction" class="nc.ui.hr.uif2.action.print.TemplatePrintAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="primaryDatasource" />
+	</bean>
+	<!-- 批量模板预览-->
+	<bean id="primaryBatchTemplatePreviewAction" class="nc.ui.rm.psndoc.action.RMBatchTemplatePreviewAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="primaryDatasource" />
+	</bean>
+	<!-- 批量模板打印-->
+	<bean id="primaryBatchTemplatePrintAction" class="nc.ui.rm.psndoc.action.RMBatchTemplatePrintAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="primaryDatasource" />
+	</bean>
+	<bean id="primaryDirectPreviewAction" class="nc.ui.hr.uif2.action.print.DirectPreviewAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="listView" ref="primaryListView" />
+	</bean>
+	<bean id="primaryDirectPrintAction" class="nc.ui.hr.uif2.action.print.DirectPrintAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="listView" ref="primaryListView" />
+	</bean>
+	<bean id="primaryExportListAction" class="nc.ui.hr.uif2.action.print.ExportListAction">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="listView" ref="primaryListView" />
+	</bean>
+	<!-- 初选通过人员列表打印按钮 -->
+	<bean id="primaryListPrintActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="actions">
+			<list>
+				<ref bean="primaryDirectPreviewAction" />
+				<ref bean="primaryDirectPrintAction" />
+				<ref bean="primaryExportListAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="primaryTemplatePrintAction" />
+				<ref bean="primaryTemplatePreviewAction" />
+				<ref bean="primaryBatchTemplatePrintAction" />
+				<ref bean="primaryBatchTemplatePreviewAction" />
+			</list>
+		</property>
+	</bean>
+	<!-- 初选通过人员打印按钮  end-->
+
+	<!-- 面试中人员打印按钮  begin-->
+	<bean id="interviewDatasource" class="nc.ui.rm.psndoc.model.RMPsndocPrintDataSource">
+		<property name="model" ref="PrimaryAppModel" />
+		<property name="singleData" value="true" />
+	</bean>
+	<bean id="interviewPrintModel" class="nc.ui.uif2.model.BillManageModel">
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="interviewTemplatePreviewAction" class="nc.ui.rm.psndoc.action.InterviewTemplatePreviewAction">
+		<property name="model" ref="interviewPrintModel" />
+		<property name="interviewModel" ref="InterviewAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="interviewDatasource" />
+	</bean>
+	<bean id="interviewTemplatePrintAction" class="nc.ui.rm.psndoc.action.InterviewTemplatePrintAction">
+		<property name="model" ref="interviewPrintModel" />
+		<property name="interviewModel" ref="InterviewAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="interviewDatasource" />
+	</bean>
+	<!-- 批量模板预览-->
+	<bean id="interviewBatchTemplatePreviewAction"
+		class="nc.ui.rm.psndoc.action.InterviewBatchTemplatePreviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="interviewDatasource" />
+	</bean>
+	<!-- 批量模板打印-->
+	<bean id="interviewBatchTemplatePrintAction"
+		class="nc.ui.rm.psndoc.action.InterviewBatchTemplatePrintAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="nodeKey" ref="applynodekey" />
+		<property name="printDlgParentConatiner" ref="applyCardForm" />
+		<property name="datasource" ref="interviewDatasource" />
+	</bean>
+	<bean id="interviewDirectPreviewAction" class="nc.ui.hr.uif2.action.print.DirectPreviewAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="listView" ref="interviewListView" />
+	</bean>
+	<bean id="interviewDirectPrintAction" class="nc.ui.hr.uif2.action.print.DirectPrintAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="listView" ref="interviewListView" />
+	</bean>
+	<bean id="interviewExportListAction" class="nc.ui.hr.uif2.action.print.ExportListAction">
+		<property name="model" ref="InterviewAppModel" />
+		<property name="listView" ref="interviewListView" />
+	</bean>
+	<!-- 面试中人员列表打印按钮 -->
+	<bean id="interviewListPrintActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="actions">
+			<list>
+				<ref bean="interviewDirectPreviewAction" />
+				<ref bean="interviewDirectPrintAction" />
+				<ref bean="interviewExportListAction" />
+				<ref bean="SeparatorAction" />
+				<ref bean="interviewTemplatePrintAction" />
+				<ref bean="interviewTemplatePreviewAction" />
+				<ref bean="interviewBatchTemplatePrintAction" />
+				<ref bean="interviewBatchTemplatePreviewAction" />
+			</list>
+		</property>
+	</bean>
+	<!-- 面试中人员打印按钮  end-->
+</beans>

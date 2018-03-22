@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<module name="hrss">
+	<public>
+		<component priority="0" singleton="true" remote="true" tx="NONE">
+			<interface>nc.bs.hrss.RmManageService.WebRmManageService</interface>
+			<implementation>nc.impl.hrss.RmManageServiceImpl.WebRmManageServiceImpl</implementation>
+		</component>
+</public>
+	
+</module>

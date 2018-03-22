@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- 环境变量 -->
+	<bean id="context" class="nc.vo.uif2.LoginContext">	</bean>
+	
+	<bean id="resouceCode" class="java.lang.String">
+    	<constructor-arg value="60210active" />
+    </bean>
+	
+	<!-- 对象转换器工厂，由此获取操作对象的特征信息 -->
+	<bean id="boadatorfactory" class="nc.vo.bd.meta.BDObjectAdpaterFactory"/>
+	
+	<!-- 管理应用模型  -->
+	<bean id="ManageAppModel" class="nc.ui.rm.active.model.RMActiveAppModel">
+		<property name="service" ref="ManageModelService"></property>
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+	
+	<!-- 查看费用的管理应用模型  -->
+	<bean id="lookAppModel" class="nc.ui.uif2.model.BillManageModel">
+		<property name="service" ref="ManageModelService"></property>
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+	
+	<!-- 应用服务类，负责进行模型操作的处理 -->
+	<bean id="ManageModelService" class="nc.ui.rm.active.model.RMActiveModelService"/>
+	
+	<!-- 数据模型管理器，主要负责各种方式的模型初始化 -->
+	<bean id="modelDataManager" class="nc.ui.rm.active.model.RMActiveModelDataManager">
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="service" ref="ManageModelService"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+	
+	
+	
+	<!-- 模板容器，负责对模板的统一装载 -->
+	<bean id="templateContainer" class="nc.ui.uif2.editor.TemplateContainer"  init-method="load">
+		<property name="context" ref="context"/>
+		<property name="nodeKeies">
+			<list>
+			    <value>rmactive</value>
+			    <value>activejob</value>
+			    <value>activefee</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 界面元素 ###########################################################-->
+	
+	<!-- 列表视图 -->
+	<bean id="listView" class="nc.ui.rm.active.view.RMActiveBillListView" init-method="initUI">
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="multiSelectionEnable" value="false" />
+		<property name="multiSelectionMode" value="1" />
+		<property name="nodekey" value="rmactive"></property>
+		<property name="templateContainer" ref="templateContainer"></property>
+		<property name="north" ref="listToolBarPanel" />
+		<property name="dealHyperlink" value="true"/>
+	</bean>
+	<!-- 在此添加超链接的mediator -->
+	<bean id="mouseClickShowPanelMediator" class="nc.ui.hr.uif2.mediator.HyperLinkClickMediator">
+		 <property name="model" ref="ManageAppModel" />
+		 <property name="showUpComponent" ref="billFormEditor" />
+		 <property name="hyperLinkColumn" value="code" />
+    </bean>
+	<!-- 查询结果显示 -->
+	<bean id="listToolBarPanel" class="nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel">
+   		<property name="model" ref="ManageAppModel" />
+  	</bean>
+	
+	<!--招聘活动费用 卡控件-->
+	<bean id="billFormEditor" class="nc.ui.rm.active.view.RMActiveCardForm" init-method="initUI">
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="nodekey" value="rmactive"></property>
+		<property name="templateContainer" ref="templateContainer"/>
+		<property name="editLineAction" ref="editLineAction"/>
+		<property name="bodyActionMap">
+			<map>
+				<entry key="sub_jobinfo">
+					<list>
+						<ref bean="addLineAction" />
+						<ref bean="DelLineAction" />
+					</list>
+				</entry>
+				<entry key="feiyong">
+					<list>
+						<ref bean="FeeAddLineAction" />
+						<ref bean="DelLineAction" />
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!--招聘活动职位  卡控件-->
+	<bean id="activeJobCardForm" class="nc.ui.rm.active.view.ActiveJobCardForm" init-method="initUI">
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="nodekey" value="activejob"></property>
+		<property name="templateContainer" ref="templateContainer"/>
+	</bean>
+	<!-- <bean id="activeJobCardForm" class="nc.ui.rm.active.view.ActiveJobCardForm"  init-method="initUI">
+	    <property name="model" ref="ManageAppModel"/>
+	    <property name="templateContainer" ref="templateContainer" />
+	</bean> -->
+	
+	<!--招聘职位详细信息dialog-->
+	<!--<bean id="jobDialog" class="nc.ui.rm.active.view.ActiveJobEditorDialog" init-method="initUI">
+		<constructor-arg ref="container"/>
+		<property name="billForm" ref="activeJobCardForm"></property>
+		<property name="validator" ref="jobFormNotNullValidator"/>
+		<property name="model" ref="ManageAppModel"/>
+	</bean>
+	
+	--><!-- 查看费用列表视图 -->
+	<bean id="feeListView" class="nc.ui.uif2.editor.BillListView" init-method="initUI">
+		<property name="model" ref="lookAppModel"></property>
+		<property name="multiSelectionEnable"> <value>false</value></property>
+		<property name="nodekey" value="activefee"></property>
+		<!-- 次配置项的意义为列表视图中如果有主子表展现，则不显示子列表 -->
+		<property name="pos"><value>head</value></property>
+		<property name="templateContainer" ref="templateContainer"></property>
+	</bean>
+	
+	<!-- 查询面板 -->
+  <bean id="queryAreaShell" class="nc.ui.uif2.actions.QueryAreaShell" init-method="initUI">
+    <property name="queryArea">
+      <bean factory-bean="queryAction" factory-method="createQueryArea" />
+    </property>
+  </bean>
+	
+	<!-- 界面零件 -->
+	<bean id="orgpanel" class="nc.ui.hr.uif2.view.PrimaryOrgPanel" init-method="initUI">
+		<property name="model" ref="ManageAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="pk_orgtype" value="HRORGTYPE00000000000" />
+	</bean>
+	
+	<bean id="container" class="nc.ui.uif2.TangramContainer" init-method="initUI">
+	    <property name="tangramLayoutRoot">
+	      <bean class="nc.ui.uif2.tangramlayout.node.TBNode">
+	        <property name="showMode" value="CardLayout" />
+	        <property name="tabs">
+	          <list>
+	            <bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+	              <property name="showMode" value="NoDivider" />
+	              <property name="up">
+	                <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                  <property name="component" ref="orgpanel" />
+	                </bean>
+	              </property>
+	              <property name="down">
+	                <bean class="nc.ui.uif2.tangramlayout.node.HSNode">
+	                  <property name="left">
+	                    <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                      <property name="component" ref="queryAreaShell" />
+	                    </bean>
+	                  </property>
+	                  <property name="right">
+	                    <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                      <property name="component" ref="listView" />
+	                    </bean>
+	                  </property>
+	                  <property name="dividerLocation" value="0.2f" />
+	                </bean>
+	                <!-- <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                      <property name="component" ref="listView" />
+	                </bean> -->
+	              </property>
+	              <property name="dividerLocation" value="30f" />
+	            </bean>
+	            <bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+	              <property name="showMode" value="NoDivider" />
+	              <property name="up">
+	                <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                  <property name="component" ref="editorToolBarPanel" />
+	                </bean>
+	              </property>
+	              <property name="down">
+	                <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                  <property name="component" ref="billFormEditor" />
+	                </bean>
+	              </property>
+	              <property name="dividerLocation" value="26f" />
+	            </bean>
+	          </list>
+	        </property>
+	      </bean>
+	    </property>
+  </bean>
+  
+  <bean id="editorToolBarPanel" class="nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel">
+    <property name="model" ref="ManageAppModel" />
+    <property name="titleAction" ref="editorReturnAction" />
+    <property name="actions">
+      <list>
+      	<ref bean="FileManageAction" />
+		<ref bean="barSeparator" />
+        <ref bean="FirstLineAction" />
+        <ref bean="PreLineAction" />
+        <ref bean="NextLineAction" />
+        <ref bean="LastLineAction" />
+      </list>
+    </property>
+  </bean>
+  <!-- 分隔栏 -->
+  <bean id="barSeparator" class="nc.ui.pub.beans.ActionsBar$ActionsBarSeparator" />
+  
+  <bean id="editorReturnAction" class="nc.ui.uif2.actions.ShowMeUpAction">
+    <property name="goComponent" ref="listView" />
+  </bean>
+  
+  	<!-- 查询 -->
+	<bean id="queryAction" class="nc.ui.rm.active.action.RMActiveQueryAction">
+		<property name="model" ref="ManageAppModel"/>
+		<!-- <property name="queryDelegator" ref="QueryDelegator" /> -->
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="queryDelegator">
+			<bean class="nc.ui.rm.active.model.ActiveQueryDelegator">
+				<property name="nodeKey" value="rmactive" />
+				<property name="context" ref="context" />
+				<property name="model" ref="ManageAppModel"/>
+				<property name="queryAreaShell" ref="queryAreaShell"/>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- Actions ###########################################################-->
+	<bean id="toftpanelActionContributors" class="nc.ui.uif2.actions.ActionContributors">
+		<property name="contributors">
+			<list>
+				<ref bean="listViewActions"/>
+				<ref bean="cardEditorActions"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 列表界面 -->
+	<bean id="listViewActions" class="nc.ui.rm.active.view.ActiveActionContainer">
+		<constructor-arg><ref bean="listView"/></constructor-arg>
+		<property name="model" ref="ManageAppModel"/>
+		<property name="actions">
+			<list>
+				<ref bean="addAction"/>
+				<ref bean="editAction"/>
+				<ref bean="deleteAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="queryAction"/> 
+				<ref bean="refreshAction"/> 
+				<ref bean="separatorAction"/>
+				<ref bean="useAction"/>
+				<!-- 增加站厅活动按钮 -->
+				<ref bean="suspendAction"/>
+				<ref bean="unUseAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="lookFeeAction"/>
+				<ref bean="separatorAction" />
+				<ref bean="FileManageAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="PrintGroupAction"/>
+			</list>
+		</property>
+	</bean>
+	<!-- 卡片界面 -->
+	<bean id="cardEditorActions" class="nc.ui.rm.active.view.ActiveActionContainer">
+		<constructor-arg><ref bean="billFormEditor" /></constructor-arg>
+		<property name="model" ref="ManageAppModel"/>
+		<property name="actions">
+			<list>
+				<ref bean="addAction"/>
+				<ref bean="editAction"/>
+				<ref bean="deleteAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="refreshAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="useAction"/>
+				<!-- 增加站厅活动按钮 -->
+				<ref bean="suspendAction"/>
+				<ref bean="unUseAction"/>
+				<ref bean="separatorAction" />
+				<ref bean="FileManageAction"/>
+				<ref bean="separatorAction" />
+				<ref bean="cardPrintActiongroup"/>
+			</list>
+		</property>
+		<property name="editActions">
+			<list>
+				<ref bean="saveAction"/>
+				<ref bean="saveAddAction"/>
+				<ref bean="separatorAction" />
+				<ref bean="cancelAction"/> 
+				<ref bean="separatorAction" />
+				<ref bean="importNeedAction" />
+				<ref bean="lookFeeAction"/>
+			</list>
+		</property>
+		
+	</bean>
+	
+	<!-- 新增 -->
+	<bean id="addAction" class="nc.ui.rm.active.action.AddActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+	</bean>
+	<!-- 修改 -->
+	<bean id="editAction" class="nc.ui.rm.active.action.EditActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="operateCode" value="Edit" />
+ 		<property name="mdOperateCode" value="Edit" />
+   	 	<property name="resourceCode" ref="resouceCode" />
+	</bean>
+	<!-- 删除 -->
+	<bean id="deleteAction" class="nc.ui.rm.active.action.DeleteActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="operateCode" value="Delete" />
+ 		<property name="mdOperateCode" value="Delete" />
+   	 	<property name="resourceCode" ref="resouceCode" />
+	</bean>
+	
+	<!-- 刷新-->
+	 <bean id="refreshAction" class="nc.ui.rm.active.action.RefreshActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="dataManager" ref="modelDataManager"></property>
+		<property name="formEditor" ref="billFormEditor"/>
+	</bean>
+	
+	<!-- 启用活动 -->
+	<bean id="useAction" class="nc.ui.rm.active.action.StartActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="operateCode" value="StartActive" />
+ 		<property name="mdOperateCode" value="StartActive" />
+   	 	<property name="resourceCode" ref="resouceCode" />
+   	</bean> 
+   	<!-- 暂停活动 -->
+	<bean id="suspendAction" class="nc.ui.rm.active.action.SuspendActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="operateCode" value="StartActive" />
+ 		<property name="mdOperateCode" value="StartActive" />
+   	 	<property name="resourceCode" ref="resouceCode" />
+   	</bean> 
+   	
+   	<!-- 关闭活动 -->
+   	<bean id="unUseAction" class="nc.ui.rm.active.action.CloseActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="operateCode" value="CloseActive" />
+ 		<property name="mdOperateCode" value="CloseActive" />
+   	 	<property name="resourceCode" ref="resouceCode" />
+   	</bean>
+	
+	<!-- 查看预算费用 -->
+	<bean id="lookFeeAction" class="nc.ui.rm.active.action.LookFeeAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="listView" ref="feeListView"/>
+		<property name="billForm" ref="billFormEditor" />
+   	</bean>
+	<!-- 附件管理按钮  -->
+	<bean id="FileManageAction" class="nc.ui.hr.uif2.action.FileManageAction">
+		<property name="model" ref="ManageAppModel" />
+	</bean>
+	<!-- 分隔按钮 -->
+	<bean id="separatorAction" class="nc.funcnode.ui.action.SeparatorAction"/>
+	
+	<!-- 保存按钮 -->
+	<bean id="saveAction" class="nc.ui.rm.active.action.SaveActiveAction">
+	    <property name="editor" ref="billFormEditor"></property>
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="validator">
+			<list>
+				<ref bean="billFormNotNullValidator"/>
+				<ref bean="activeValidator"/>
+			</list>
+		</property>
+	</bean>
+	<!-- 保存新增 -->
+	<bean id="saveAddAction" class="nc.ui.rm.active.action.SaveAddActiveAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="saveAction" ref="saveAction"/>
+		<property name="addAction" ref="addAction"/>
+	</bean>
+	<!-- 取消按钮 -->
+	<bean id="cancelAction" class="nc.ui.rm.active.action.CancelActiveAction">
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="billForm" ref="billFormEditor" />
+	</bean>
+	
+	<!-- 导入招聘需求 -->
+	<bean id="importNeedAction" class="nc.ui.rm.active.action.ImportNeedAction">
+		 <property name="model" ref="ManageAppModel"/>
+		 <property name="billForm" ref="billFormEditor" />
+		 <property name="operateCode" value="ImportNeed" />
+ 		 <property name="mdOperateCode" value="ImportNeed" />
+   	 	 <property name="resourceCode" ref="resouceCode" />
+   	</bean>
+	
+	 <!-- 关闭节点时提示是否保存数据 -->
+	<bean id="ClosingListener" class="nc.ui.uif2.FunNodeClosingHandler">
+		<property name="model" ref="ManageAppModel" />
+		<property name="saveaction" ref="saveAction" />
+		<property name="cancelaction" ref="cancelAction" />
+	</bean>
+	
+	<bean id="billFormNotNullValidator" class="nc.ui.hr.uif2.validator.BillFormNotNullValidator">
+	  <property name="billForm" ref="billFormEditor" />
+	</bean>
+	<bean id="activeValidator" class="nc.ui.rm.active.validator.ActiveValidator"/>
+	
+	<!-- 打印相关 -->
+	<bean id="PrintGroupAction" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code"><value>printgroup</value> </property>
+		<property name="name">
+		    <bean class='nc.ui.uif2.I18nFB'>
+			     <property name="resDir" value="6021active" />
+			     <property name="defaultValue" value="打印" />
+			     <property name="resId" value="X6021active001" />
+		    </bean>
+  		</property>
+		<property name="actions">
+	 	<list>
+	 		<ref bean="printDirectAction"/>
+	  		<ref bean="printPreviewAction"/>
+	  		<ref bean="OutputAction"/>
+	  		<ref bean="separatorAction" />
+	  		<ref bean="TemplatePrintAction"/>
+	  		<ref bean="TemplatePreviewAction"/>
+	 	</list>
+		</property>
+	</bean>
+	<bean id="printDirectAction" class="nc.ui.hr.uif2.action.print.DirectPrintAction">
+   		<property name="model" ref="ManageAppModel" />
+   		<property name="listView" ref="listView" />
+   </bean>
+   <bean id="printPreviewAction" class="nc.ui.hr.uif2.action.print.DirectPreviewAction">
+    	<property name="model" ref="ManageAppModel" />
+    	<property name="listView" ref="listView" />
+   </bean>
+   <bean id="OutputAction" class="nc.ui.hr.uif2.action.print.ExportListAction">
+    	<property name="model" ref="ManageAppModel" />
+    	<property name="listView" ref="listView" />
+  	</bean>
+  	<bean id="TemplatePrintAction" class="nc.ui.hr.uif2.action.print.TemplatePrintAction">
+      <property name="model" ref="ManageAppModel" />
+      <property name="nodeKey" value="rmactive" />
+      <property name="printDlgParentConatiner" ref="billFormEditor"></property>
+       <property name="datasource" ref="datasource" />  
+    </bean>
+    <bean id="TemplatePreviewAction" class="nc.ui.hr.uif2.action.print.TemplatePreviewAction">
+	     <property name="model" ref="ManageAppModel" />
+	     <property name="nodeKey" value="rmactive"  />
+	     <property name="printDlgParentConatiner" ref="billFormEditor"></property>
+       	 <property name="datasource" ref="datasource" />  
+    </bean>
+    <bean id="exportCardAction" class="nc.ui.hr.uif2.action.print.ExportCardAction">
+		<property name="model" ref="ManageAppModel" />
+		<property name="printDlgParentConatiner" ref="billFormEditor" />
+		<property name="datasource" ref="datasource" />
+		<property name="nodeKey" value="rmactive" />
+	</bean>
+	<!-- <bean id="datasource" class="nc.ui.hr.uif2.model.HRMetaDataDataSource">
+       <property name="model" ref="ManageAppModel" />
+       <property name="singleData" value="true"/>
+    </bean>
+     -->
+    <bean id="datasource" class="nc.ui.rm.active.model.RMActivePrintDatasource">
+       <property name="model" ref="ManageAppModel" />
+       <property name="singleData" value="true"/>
+    </bean>
+    <bean id="cardPrintActiongroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code"><value>cardprintgroup</value> </property>
+		<property name="name">
+		    <bean class='nc.ui.uif2.I18nFB'>
+			     <property name="resDir" value="6021active" />
+			     <property name="defaultValue" value="打印" />
+			     <property name="resId" value="X6021active001" />
+		    </bean>
+  		</property>
+		<property name="actions">
+	 	<list>
+	 		<ref bean="TemplatePrintAction"/>
+	  		<ref bean="TemplatePreviewAction"/>
+	  		<ref bean="exportCardAction"/>
+	 	</list>
+		</property>
+	</bean>
+    
+    <!-- 子表操作 -->
+	<bean id="addLineAction" class="nc.ui.rm.active.action.ActiveAddLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+		<property name="billForm" ref="activeJobCardForm"></property>
+		<property name="validator" ref="jobFormNotNullValidator"/>
+	</bean>
+	<!-- 子表操作 -->
+	<bean id="FeeAddLineAction" class="nc.ui.rm.active.action.FeeAddLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+	</bean>
+	<bean id="editLineAction" class="nc.ui.rm.active.action.ActiveEditLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+		<property name="billForm" ref="activeJobCardForm"></property>
+		<property name="validator" ref="jobFormNotNullValidator"/>
+	</bean>
+	<bean id="DelLineAction" class="nc.ui.rm.active.action.ActiveDelLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+	</bean>
+	<bean id="InsertLineAction" class="nc.ui.rm.active.action.ActiveInsertLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+	</bean>
+	<bean id="copyLineAction" class="nc.ui.rm.active.action.ActiveCopyLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+	</bean>
+	<bean id="PasteLineAction" class="nc.ui.rm.active.action.ActivePasteLineAction">
+		<property name="model" ref="ManageAppModel"/>
+		<property name="cardPanel" ref="billFormEditor"/>
+	</bean>
+	
+	<bean id="FirstLineAction" class="nc.ui.uif2.actions.FirstLineAction">
+	  <property name="model" ref="ManageAppModel" />
+	</bean>
+	<bean id="PreLineAction" class="nc.ui.uif2.actions.PreLineAction">
+	  <property name="model" ref="ManageAppModel" />
+	</bean>
+	<bean id="NextLineAction" class="nc.ui.uif2.actions.NextLineAction">
+	  <property name="model" ref="ManageAppModel" />
+	</bean>
+	<bean id="LastLineAction" class="nc.ui.uif2.actions.LastLineAction">
+	  <property name="model" ref="ManageAppModel" />
+	</bean>
+	
+	<!-- 子表非空校验 -->
+	<bean id="jobFormNotNullValidator" class="nc.ui.rm.active.view.ActiveJobValidator">
+	  <property name="billForm" ref="activeJobCardForm" />
+	</bean>
+	
+</beans>

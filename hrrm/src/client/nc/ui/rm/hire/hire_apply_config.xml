@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<import resource="hire_base_config.xml" />
+
+  	<bean id="editorToolBarPanel" class="nc.ui.hr.pf.HRPFCardLayoutToolbarPanel">
+	    <property name="model" ref="ManageAppModel" />
+	    <property name="titleAction" ref="editorReturnAction" />
+	    <property name="actions">
+	      <list>
+	      	<ref bean="fileManageAction" />
+	      	<ref bean="barSeparator"/>
+	        <ref bean="FirstLineAction" />
+	        <ref bean="PreLineAction" />
+	        <ref bean="NextLineAction" />
+	        <ref bean="LastLineAction" />
+	      </list>
+	    </property>
+	</bean>
+	<bean id="barSeparator" class="nc.ui.pub.beans.ActionsBar$ActionsBarSeparator" />
+	
+	<!-- 管理应用模型  -->
+	<bean id="ManageAppModel" class="nc.ui.rm.hire.model.HireApplyAppModel">
+		<property name="service" ref="ManageModelService"></property>
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory"></property>
+		<property name="context" ref="context"></property>
+		<property name="approveSite" value="false" /> <!--指定为false,表示申请节点-->
+		<property name="billType" value="6801" />
+	</bean>
+	
+	<!-- list view actions -->
+	<bean id="listViewActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg><ref bean="listView"/></constructor-arg>
+		<property name="actions">
+			<list>
+				<ref bean="addActionGroup"/>
+				<ref bean="editAction"/>
+				<ref bean="deleteAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="queryAction"/> 
+				<ref bean="refreshAction"/> 
+				<ref bean="separatorAction"/>
+				<ref bean="commitActionGroup"/>
+				<ref bean="separatorAction"/>
+				<!-- <ref bean="sendNoticeActionGroup"/>-->
+				<ref bean="lookEmpInfoAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="intoPsnlibAction"/>
+				<ref bean="fileManageAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="printGroupAction"/>
+			</list>
+		</property>
+		<property name="model" ref="ManageAppModel"/>
+	</bean>
+	<!-- Card Actions -->
+	<bean id="cardEditorActions" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg><ref bean="billFormEditor" /></constructor-arg>
+		<property name="actions">
+			<list>
+				<ref bean="addAction"/>
+				<ref bean="editAction"/>
+				<ref bean="deleteAction"/>
+				<ref bean="separatorAction" />
+				<ref bean="refreshAction"/> 
+				<ref bean="separatorAction"/>
+				<ref bean="commitActionGroup"/>
+				<ref bean="separatorAction" />
+				<!-- <ref bean="sendNoticeActionGroup"/> 
+				<ref bean="separatorAction"/>-->
+				<ref bean="lookEmpInfoAction"/>
+				<ref bean="separatorAction"/>
+				<ref bean="intoPsnlibAction"/>
+				<ref bean="cardPrintActiongroup"/>
+			</list>
+		</property>
+		<property name="editActions">
+			<list>
+				<ref bean="saveAction"/>
+				<ref bean="saveAddAction"/>
+				<ref bean="saveSubmitAction"/>
+				<ref bean="separatorAction" />
+				<ref bean="cancelAction"/> 
+			</list>
+		</property>
+		<property name="model" ref="ManageAppModel"/>
+	</bean>
+
+	<!--卡控件-->
+	<bean id="billFormEditor" class="nc.ui.rm.hire.view.HireApplyCardForm" init-method="initUI">
+		<property name="model" ref="ManageAppModel"></property>
+		<property name="nodekey" value="hireapply"></property>
+		<property name="templateContainer" ref="templateContainer"/>
+		<property name="editLineAction" ref="editLineAction"/>
+		<property name="tabActions">
+	      <list>
+	        <ref bean="addLineAction"/>
+			<ref bean="DelLineAction"/>
+			<!--<ref bean="InsertLineAction"/>
+			<ref bean="copyLineAction"/>
+			<ref bean="PasteLineAction"/>-->
+	      </list>
+   		</property>
+   		<property name="bodyActions">
+			<list>
+				<ref bean = "lookEmpInfoAction"/>
+				<ref bean="sendHireEmailAction" />
+				<ref bean="sendExamEmailAction" />
+				<ref bean="sendRefuseEmailAction" />
+				<ref bean = "intoPsnlibAction"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="container" class="nc.ui.uif2.TangramContainer" init-method="initUI">
+	    <property name="tangramLayoutRoot">
+	      <bean class="nc.ui.uif2.tangramlayout.node.TBNode">
+	        <property name="showMode" value="CardLayout" />
+	        <property name="tabs">
+	          <list>
+	            <bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+	              <property name="showMode" value="NoDivider" />
+	              <property name="up">
+	                <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                  <property name="component" ref="orgpanel" />
+	                </bean>
+	              </property>
+	              <property name="down">
+	                <bean class="nc.ui.uif2.tangramlayout.node.HSNode">
+	                  <property name="left">
+	                    <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                      <property name="component" ref="queryAreaShell" />
+	                    </bean>
+	                  </property>
+	                  <property name="right">
+	                    <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                      <property name="component" ref="listView" />
+	                    </bean>
+	                  </property>
+	                  <property name="dividerLocation" value="0.2f" />
+	                </bean>
+	              </property>
+	              <property name="dividerLocation" value="30f" />
+	            </bean>
+	            <bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+	              <property name="showMode" value="NoDivider" />
+	              <property name="up">
+	                <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                  <property name="component" ref="editorToolBarPanel" />
+	                </bean>
+	              </property>
+	              <property name="down">
+	                <bean class="nc.ui.uif2.tangramlayout.node.CNode">
+	                  <property name="component" ref="billFormEditor" />
+	                </bean>
+	              </property>
+	              <property name="dividerLocation" value="26f" />
+	            </bean>
+	          </list>
+	        </property>
+	      </bean>
+	    </property>
+  </bean>
+</beans>
